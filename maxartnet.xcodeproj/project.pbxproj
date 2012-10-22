@@ -98,11 +98,9 @@
 /* Begin PBXFileReference section */
 		16A4421B1622149400928FCB /* maxartnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = maxartnet.c; sourceTree = "<group>"; };
 		16A442E6162214D900928FCB /* max-common.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "max-common.xcconfig"; sourceTree = "<group>"; };
-		16A442E8162214FF00928FCB /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		16A4434D16221B7000928FCB /* artnet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = artnet.c; sourceTree = "<group>"; };
 		16A4434E16221B7000928FCB /* artnet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = artnet.h; sourceTree = "<group>"; };
 		16A4434F16221B7000928FCB /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = common.h; sourceTree = "<group>"; };
-		16A4435016221B7000928FCB /* Makefile.am */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
 		16A4435116221B7000928FCB /* misc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = misc.c; sourceTree = "<group>"; };
 		16A4435216221B7000928FCB /* misc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = misc.h; sourceTree = "<group>"; };
 		16A4435316221B7000928FCB /* network.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = network.c; sourceTree = "<group>"; };
@@ -184,7 +182,7 @@
 		16A443AB16221B7000928FCB /* macho-prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "macho-prefix.pch"; sourceTree = "<group>"; };
 		16A443AC16221B7000928FCB /* MaxAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MaxAPI.framework; sourceTree = "<group>"; };
 		16A443AD16221B7000928FCB /* MaxLua.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MaxLua.framework; sourceTree = "<group>"; };
-		2FBBEAE508F335360078DB84 /* maxartnet.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = maxartnet.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
+		2FBBEAE508F335360078DB84 /* artnet.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = artnet.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
 		54266BCE05E6E9780000000C /* MaxAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MaxAPI.framework; path = libs/max/MaxAPI.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -205,7 +203,6 @@
 		089C166AFE841209C02AAC07 /* iterator */ = {
 			isa = PBXGroup;
 			children = (
-				16A442E8162214FF00928FCB /* Info.plist */,
 				16A442E6162214D900928FCB /* max-common.xcconfig */,
 				16A4421A1622149400928FCB /* src */,
 				16A4434B16221B7000928FCB /* libs */,
@@ -246,7 +243,6 @@
 				16A4434D16221B7000928FCB /* artnet.c */,
 				16A4434E16221B7000928FCB /* artnet.h */,
 				16A4434F16221B7000928FCB /* common.h */,
-				16A4435016221B7000928FCB /* Makefile.am */,
 				16A4435116221B7000928FCB /* misc.c */,
 				16A4435216221B7000928FCB /* misc.h */,
 				16A4435316221B7000928FCB /* network.c */,
@@ -342,7 +338,7 @@
 		19C28FB4FE9D528D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2FBBEAE508F335360078DB84 /* maxartnet.mxo */,
+				2FBBEAE508F335360078DB84 /* artnet.mxo */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -452,7 +448,7 @@
 			);
 			name = "max-external";
 			productName = iterator;
-			productReference = 2FBBEAE508F335360078DB84 /* maxartnet.mxo */;
+			productReference = 2FBBEAE508F335360078DB84 /* artnet.mxo */;
 			productType = "com.apple.product-type.bundle";
 		};
 /* End PBXNativeTarget section */
@@ -460,6 +456,9 @@
 /* Begin PBXProject section */
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+				ORGANIZATIONNAME = "Tobias Ebsen";
+			};
 			buildConfigurationList = 2FBBEACF08F335010078DB84 /* Build configuration list for PBXProject "maxartnet" */;
 			compatibilityVersion = "Xcode 3.0";
 			developmentRegion = English;
@@ -530,27 +529,18 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 16A442E6162214D900928FCB /* max-common.xcconfig */;
 			buildSettings = {
-				C47SUPPORT = "$(SRCROOT)/../../../c74support";
-				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					HAVE_SOCKADDR_SA_LEN,
-					"\"DENORM_WANT_FIX = 1\"",
-				);
-				PRODUCT_VERSION = 6.0.0;
+				GCC_PREPROCESSOR_DEFINITIONS = HAVE_SOCKADDR_SA_LEN;
+				HAVE_SOCKADDR_SA_LEN = "";
 			};
 			name = Development;
 		};
 		2FBBEAE208F335360078DB84 /* Deployment */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 16A442E6162214D900928FCB /* max-common.xcconfig */;
 			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/lib/max\"",
-					"\"$(SRCROOT)/libs/max\"",
-				);
+				GCC_PREPROCESSOR_DEFINITIONS = HAVE_SOCKADDR_SA_LEN;
+				HAVE_SOCKADDR_SA_LEN = "";
 			};
 			name = Deployment;
 		};

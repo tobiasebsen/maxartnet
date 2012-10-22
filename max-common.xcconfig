@@ -5,7 +5,7 @@
 // Copyright © 2011, Cycling '74
 
 
-PRODUCT_NAME = $(PROJECT_NAME)
+PRODUCT_NAME = artnet
 PRODUCT_VERSION = 6.0.4
 PRODUCT_BUILD = 1974
 
@@ -15,7 +15,6 @@ HEADER_SEARCH_PATHS = /Developer/Headers/FlatCarbon "$(SRCROOT)/libs" "$(SRCROOT
 FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/libs/max"
 DSTROOT = $(SRCROOT)/build
 // (This next path is relative to DSTROOT)
-INSTALL_PATH = /
 
 INFOPLIST_FILE = $(SRCROOT)/Info.plist
 
@@ -36,3 +35,8 @@ WRAPPER_EXTENSION = mxo;
 WARNING_CFLAGS = -Wmost -Wno-four-char-constants -Wno-unknown-pragmas
 DEPLOYMENT_LOCATION = YES
 GENERATE_PKGINFO_FILE = YES
+
+DEPLOYMENT_POSTPROCESSING = YES
+DSTROOT= /Applications/Max6/Cycling '74/max-externals
+// (This next path is relative to DSTROOT)
+INSTALL_PATH = /
