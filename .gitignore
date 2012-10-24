@@ -5,7 +5,6 @@ build/
 *.o
 
 # Libraries
-*.lib
 *.a
 
 # Shared objects (inc. Windows DLLs)
