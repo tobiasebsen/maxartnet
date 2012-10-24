@@ -1,5 +1,6 @@
 # Build Folders
 build/
+obj/
 
 # Object files
 *.o
