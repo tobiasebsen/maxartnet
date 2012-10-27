@@ -112,7 +112,8 @@ void maxartnet_start(t_maxartnet *x)
 		return;
 	}	
 	x->systhread_cancel = FALSE;
-	systhread_create((method)maxartnet_threadproc, x, 0, 0, 0, &x->systhread);
+	if (systhread_create((method)maxartnet_threadproc, x, 0, 0, 0, &x->systhread) != MAX_ERR_NONE)
+		object_error((t_object*)x, "Error starting systhread");
 }
 
 void maxartnet_stop(t_maxartnet *x)
@@ -140,6 +141,12 @@ void maxartnet_int(t_maxartnet *x, long n)
 
 void maxartnet_poll(t_maxartnet *x)
 {
+	t_atom a[2];
+	
+	atom_setsym(&a[0], gensym("menu"));
+	atom_setsym(&a[1], gensym("clear"));
+	outlet_atoms(x->outlet, 2, a);
+
 	x->polltime = gettime();
 	x->nodes_found = 0;
 	x->status = STATUS_POLLING;
@@ -515,6 +522,11 @@ static int maxartnet_reply_handler(artnet_node node, void *pp, void *d) {
 	atom_setsym(&a[2], gensym("mac"));
 	atom_setsym(&a[3], gensym(s));
 	outlet_atoms(x->outlet, 4, a);
+	
+	atom_setsym(&a[0], gensym("menu"));
+	atom_setsym(&a[1], gensym("append"));
+	atom_setsym(&a[2], gensym((char*)ne->shortname));
+	outlet_atoms(x->outlet, 3, a);
 
 	return 0;
 }
