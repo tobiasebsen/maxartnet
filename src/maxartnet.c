@@ -13,33 +13,38 @@
 
 #include "artnet.h"
 
+#include "interfaces.h"
+
 #define STATUS_IDLE		0
 #define STATUS_POLLING	1
 
 ////////////////////////// object struct
 typedef struct _maxartnet
 {
-	t_object		ob;
-	long			sub;
-	t_symbol*		shortname;
-	t_symbol*		longname;
-	long			bcast_limit;
-	t_systhread		systhread;
-	int				systhread_cancel;
-	void*			outlet;
-	void*			inputs[4];
-	void*			outputs[4];
-	artnet_node		node;
-	int				status;
-	long			polltime;
-	int				polltimeout;
-	int				nodes_found;
+	t_object			ob;
+	long				sub;
+	t_symbol*			shortname;
+	t_symbol*			longname;
+	long				bcast_limit;
+	t_systhread			systhread;
+	t_systhread_mutex	systhread_mutex;
+	int					systhread_cancel;
+	void*				outlet;
+	void*				inputs[4];
+	void*				outputs[4];
+	artnet_node			node;
+	int					status;
+	long				polltime;
+	int					polltimeout;
+	int					nodes_found;
 } t_maxartnet;
 
 ///////////////////////// function prototypes
 void maxartnet_int(t_maxartnet *x, long n);
 void maxartnet_poll(t_maxartnet *x);
 void maxartnet_getconfig(t_maxartnet *x);
+void maxartnet_getinterfaces(t_maxartnet *x);
+void maxartnet_setinterface(t_maxartnet *x, t_symbol *msg, long argc, t_atom *argv);
 void maxartnet_list(t_maxartnet *x, t_symbol *msg, long argc, t_atom *argv);
 void maxartnet_dmx(t_maxartnet *x, t_symbol *msg, long argc, t_atom *argv);
 void *maxartnet_new(t_symbol *s, long argc, t_atom *argv);
@@ -70,6 +75,8 @@ int main(void)
 	class_addmethod(c, (method)maxartnet_int, "int", A_LONG, 0);
 	class_addmethod(c, (method)maxartnet_poll, "poll", A_NOTHING, 0);
 	class_addmethod(c, (method)maxartnet_getconfig, "getconfig", A_NOTHING, 0);
+	class_addmethod(c, (method)maxartnet_getinterfaces, "getinterfaces", A_NOTHING, 0);
+	class_addmethod(c, (method)maxartnet_setinterface, "interface", A_GIMME, 0);
 	//class_addmethod(c, (method)maxartnet_subnet, "subnet", A_LONG, 0);
 	class_addmethod(c, (method)maxartnet_list, "list", A_GIMME, 0);
 	class_addmethod(c, (method)maxartnet_dmx, "dmx", A_GIMME, 0);
@@ -143,7 +150,7 @@ void maxartnet_poll(t_maxartnet *x)
 {
 	t_atom a[2];
 	
-	atom_setsym(&a[0], gensym("menu"));
+	atom_setsym(&a[0], gensym("nodemenu"));
 	atom_setsym(&a[1], gensym("clear"));
 	outlet_atoms(x->outlet, 2, a);
 
@@ -187,6 +194,79 @@ void maxartnet_getconfig(t_maxartnet *x)
 		atom_setlong(&a, config.out_ports[i]);
 		outlet_anything(x->outlet, gensym("config port output"), 1, &a);
 	}*/
+}
+
+void maxartnet_getinterfaces(t_maxartnet *x)
+{
+	t_atom a[4];
+	t_atom a2[3];
+	
+	atom_setsym(&a[0], gensym("interface"));
+
+	atom_setsym(&a2[0], gensym("ifacemenu"));
+	atom_setsym(&a2[1], gensym("clear"));
+	outlet_atoms(x->outlet, 2, a2);
+
+	int n = 0;
+	iface f = iface_get_first();
+	iface i = f;
+	while (i != NULL) {
+		
+		atom_setlong(&a[1], n);
+		
+		char* name = iface_get_name(i);
+		atom_setsym(&a[2], gensym("name"));
+		atom_setsym(&a[3], gensym(name));
+		outlet_atoms(x->outlet, 4, a);
+		
+		char* ip = iface_get_ip(i);
+		atom_setsym(&a[2], gensym("ip"));
+		atom_setsym(&a[3], gensym(ip));
+		outlet_atoms(x->outlet, 4, a);
+
+		atom_setsym(&a2[1], gensym("append"));
+		atom_setsym(&a2[2], gensym(ip));
+		outlet_atoms(x->outlet, 3, a2);
+
+		char* bcast = iface_get_bcast(i);
+		atom_setsym(&a[2], gensym("bcast"));
+		atom_setsym(&a[3], gensym(bcast));
+		outlet_atoms(x->outlet, 4, a);
+
+		char hwaddr[20];
+		iface_get_hwaddr(i, hwaddr);
+		atom_setsym(&a[2], gensym("hwaddr"));
+		atom_setsym(&a[3], gensym(hwaddr));
+		outlet_atoms(x->outlet, 4, a);
+
+		n++;
+		i = iface_get_next(i);
+	}
+	iface_free(f);
+}
+
+void maxartnet_setinterface(t_maxartnet *x, t_symbol *msg, long argc, t_atom *argv)
+{
+	if (argc > 0) {
+		x->systhread_cancel = TRUE;
+		unsigned int r;
+		systhread_join(x->systhread, &r);
+	
+		artnet_stop(x->node);
+		artnet_destroy(x->node);
+		
+		char* ip = atom_getsym(argv)->s_name;
+	
+		x->node = artnet_new(ip, FALSE);
+		if (x->node == NULL)
+			object_error((t_object*)x, artnet_strerror());
+
+		artnet_set_handler(x->node, ARTNET_REPLY_HANDLER, maxartnet_reply_handler, x);
+		
+		x->status = STATUS_POLLING;
+		x->polltime = gettime();
+		x->polltimeout = 1000;
+	}
 }
 
 t_max_err maxartnet_subnet_get(t_maxartnet *x, void *attr, long *ac, t_atom **av)
@@ -358,6 +438,9 @@ void *maxartnet_new(t_symbol *s, long argc, t_atom *argv)
 		return x;
 		
 	x->outlet = outlet_new(x, NULL);
+	
+	x->systhread = NULL;
+	systhread_mutex_new(&x->systhread_mutex, 0);
 			
 	x->node = artnet_new(NULL, FALSE);
 	if (x->node == NULL)
@@ -475,11 +558,10 @@ void* maxartnet_threadproc(t_maxartnet* x)
 
 static int maxartnet_reply_handler(artnet_node node, void *pp, void *d) {
 
-	t_maxartnet* x = NULL;
+	t_maxartnet* x = (t_maxartnet*)d;
 	artnet_node_list nl;
 	artnet_node_entry ne = NULL;
 	
-	x = (t_maxartnet*)d;
 	nl = artnet_get_nl(x->node);
 	
 	if (artnet_nl_get_length(nl) == x->nodes_found)
@@ -527,7 +609,7 @@ static int maxartnet_reply_handler(artnet_node node, void *pp, void *d) {
 	char s[ARTNET_SHORT_NAME_LENGTH + 20];
 	sprintf(s, "%s (%s)", ne->shortname, ip);
 	
-	atom_setsym(&a[0], gensym("menu"));
+	atom_setsym(&a[0], gensym("nodemenu"));
 	atom_setsym(&a[1], gensym("append"));
 	atom_setsym(&a[2], gensym((char*)s));
 	outlet_atoms(x->outlet, 3, a);

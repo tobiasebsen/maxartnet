@@ -68,7 +68,7 @@ unsigned long LOOPBACK_IP = 0x7F000001;
  * Free memory used by the iface's list
  * @param head a pointer to the head of the list
  */
-static void free_ifaces(iface_t *head) {
+void free_ifaces(iface_t *head) {
   iface_t *ift, *ift_next;
 
   for (ift = head; ift != NULL; ift = ift_next) {
@@ -255,7 +255,7 @@ static int get_ifaces(iface_t **if_head) {
  * interfaces on this machine
  * @param ift_head the address of the pointer to the head of the list
  */
-static int get_ifaces(iface_t **if_head) {
+int get_ifaces(iface_t **if_head) {
   struct ifconf ifc;
   struct ifreq *ifr, ifrcopy;
   struct sockaddr_in *sin;
@@ -365,6 +365,9 @@ static int get_ifaces(iface_t **if_head) {
         iface->bcast_addr.sin_addr = sin->sin_addr;
       }
 #endif
+
+      strcpy(iface->if_name, ifr->ifr_name);
+
       // fetch hardware address
 #ifdef SIOCGIFHWADDR
       if (flags & SIOCGIFHWADDR) {
