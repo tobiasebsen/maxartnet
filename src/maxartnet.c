@@ -512,20 +512,24 @@ static int maxartnet_reply_handler(artnet_node node, void *pp, void *d) {
 	atom_setlong(&a[3], ne->numbports);
 	outlet_atoms(x->outlet, 4, a);
 
-	char s[20];
-	sprintf(s, "%d.%d.%d.%d", ne->ip[0], ne->ip[1], ne->ip[2], ne->ip[3]);
+	char ip[20];
+	sprintf(ip, "%d.%d.%d.%d", ne->ip[0], ne->ip[1], ne->ip[2], ne->ip[3]);
 	atom_setsym(&a[2], gensym("ip"));
-	atom_setsym(&a[3], gensym(s));
+	atom_setsym(&a[3], gensym(ip));
 	outlet_atoms(x->outlet, 4, a);
 	
-	sprintf(s, "%02x:%02x:%02x:%02x:%02x:%02x", ne->mac[0], ne->mac[1], ne->mac[2], ne->mac[3], ne->mac[4], ne->mac[5]);
+	char mac[20];
+	sprintf(mac, "%02x:%02x:%02x:%02x:%02x:%02x", ne->mac[0], ne->mac[1], ne->mac[2], ne->mac[3], ne->mac[4], ne->mac[5]);
 	atom_setsym(&a[2], gensym("mac"));
-	atom_setsym(&a[3], gensym(s));
+	atom_setsym(&a[3], gensym(mac));
 	outlet_atoms(x->outlet, 4, a);
+	
+	char s[ARTNET_SHORT_NAME_LENGTH + 20];
+	sprintf(s, "%s (%s)", ne->shortname, ip);
 	
 	atom_setsym(&a[0], gensym("menu"));
 	atom_setsym(&a[1], gensym("append"));
-	atom_setsym(&a[2], gensym((char*)ne->shortname));
+	atom_setsym(&a[2], gensym((char*)s));
 	outlet_atoms(x->outlet, 3, a);
 
 	return 0;
