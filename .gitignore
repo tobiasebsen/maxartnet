@@ -19,3 +19,8 @@ obj/
 *.out
 *.appi
 
+#Xcode
+*.pbuser
+*.mode1v3
+*.mode2v3
+

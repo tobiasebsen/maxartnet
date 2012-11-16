@@ -92,6 +92,8 @@
 		16A4440A16221B7000928FCB /* macho-prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 16A443AB16221B7000928FCB /* macho-prefix.pch */; };
 		16A4440B16221B7000928FCB /* MaxAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A443AC16221B7000928FCB /* MaxAPI.framework */; };
 		16A4440C16221B7000928FCB /* MaxLua.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A443AD16221B7000928FCB /* MaxLua.framework */; };
+		16C4AB0A165519B800FB3CC9 /* interfaces.h in Headers */ = {isa = PBXBuildFile; fileRef = 16C4AB08165519B800FB3CC9 /* interfaces.h */; };
+		16C4AB0B165519B800FB3CC9 /* interfaces.c in Sources */ = {isa = PBXBuildFile; fileRef = 16C4AB09165519B800FB3CC9 /* interfaces.c */; };
 		2FBBEADE08F335360078DB84 /* MaxAPI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 54266BCE05E6E9780000000C /* MaxAPI.framework */; };
 /* End PBXBuildFile section */
 
@@ -182,6 +184,8 @@
 		16A443AB16221B7000928FCB /* macho-prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "macho-prefix.pch"; sourceTree = "<group>"; };
 		16A443AC16221B7000928FCB /* MaxAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MaxAPI.framework; sourceTree = "<group>"; };
 		16A443AD16221B7000928FCB /* MaxLua.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = MaxLua.framework; sourceTree = "<group>"; };
+		16C4AB08165519B800FB3CC9 /* interfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = interfaces.h; sourceTree = "<group>"; };
+		16C4AB09165519B800FB3CC9 /* interfaces.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = interfaces.c; sourceTree = "<group>"; };
 		2FBBEAE508F335360078DB84 /* artnet.mxo */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = artnet.mxo; sourceTree = BUILT_PRODUCTS_DIR; };
 		54266BCE05E6E9780000000C /* MaxAPI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MaxAPI.framework; path = libs/max/MaxAPI.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -224,6 +228,8 @@
 			isa = PBXGroup;
 			children = (
 				16A4421B1622149400928FCB /* maxartnet.c */,
+				16C4AB08165519B800FB3CC9 /* interfaces.h */,
+				16C4AB09165519B800FB3CC9 /* interfaces.c */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -426,6 +432,7 @@
 				16A4440816221B7000928FCB /* jpatcher_utils.h in Headers */,
 				16A4440916221B7000928FCB /* macho-gl-prefix.pch in Headers */,
 				16A4440A16221B7000928FCB /* macho-prefix.pch in Headers */,
+				16C4AB0A165519B800FB3CC9 /* interfaces.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -507,6 +514,7 @@
 				16A443B716221B7000928FCB /* receive.c in Sources */,
 				16A443B816221B7000928FCB /* tod.c in Sources */,
 				16A443BA16221B7000928FCB /* transmit.c in Sources */,
+				16C4AB0B165519B800FB3CC9 /* interfaces.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
