@@ -107,7 +107,7 @@ int main(void)
 	class_register(CLASS_BOX, c);
 	maxartnet_class = c;
 
-	post("ARTNET v0.1 by Tobias Ebsen (2012)");
+	post("ARTNET v0.21 by Tobias Ebsen (2012)");
 
 	return 0;
 }
@@ -262,10 +262,10 @@ void maxartnet_setinterface(t_maxartnet *x, t_symbol *msg, long argc, t_atom *ar
 			object_error((t_object*)x, artnet_strerror());
 
 		artnet_set_handler(x->node, ARTNET_REPLY_HANDLER, maxartnet_reply_handler, x);
-		
+ 		
 		x->status = STATUS_POLLING;
 		x->polltime = gettime();
-		x->polltimeout = 1000;
+		x->polltimeout = 3000;
 	}
 }
 
@@ -506,11 +506,12 @@ void *maxartnet_new(t_symbol *s, long argc, t_atom *argv)
 	//sprintf(str, "Created an ArtNet %s on sub-net %d", type == ARTNET_RAW ? "server" : "node", sub);
 	//post(str);
 	
-	artnet_set_handler(x->node, ARTNET_REPLY_HANDLER, maxartnet_reply_handler, x);
+	if (artnet_set_handler(x->node, ARTNET_REPLY_HANDLER, maxartnet_reply_handler, x) != ARTNET_EOK)
+		object_error((t_object*)x, artnet_strerror());
 	
 	x->status = STATUS_POLLING;
 	x->polltime = gettime();
-	x->polltimeout = 1000;
+	x->polltimeout = 3000;
 
 	return x;
 }
@@ -522,6 +523,8 @@ void* maxartnet_threadproc(t_maxartnet* x)
 	int max;
 	
 	int artnet_sd = artnet_get_sd(x->node);
+	
+	object_post((t_object*)x, "ArtNet threadproc started");
 
 	while (!x->systhread_cancel) {
 		
@@ -539,7 +542,8 @@ void* maxartnet_threadproc(t_maxartnet* x)
 			int n = select(max+1, &rd_fds, NULL, NULL, &tv);
 			if (n > 0) {
 				if (FD_ISSET(artnet_sd , &rd_fds))
-					artnet_read(x->node, 1);
+					if (artnet_read(x->node, 1) != ARTNET_EOK)
+						object_error((t_object*)x, "artnet_read() failed");
 			}
 			
 			if (gettime() - x->polltime > x->polltimeout)
